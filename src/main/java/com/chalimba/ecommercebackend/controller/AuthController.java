@@ -1,6 +1,6 @@
 package com.chalimba.ecommercebackend.controller;
 
-import com.chalimba.ecommercebackend.config.TokenProvider;
+import com.chalimba.ecommercebackend.config.JwtUtil;
 import com.chalimba.ecommercebackend.dto.LoginDto;
 import com.chalimba.ecommercebackend.dto.TokenDto;
 import com.chalimba.ecommercebackend.dto.UserDto;
@@ -8,6 +8,7 @@ import com.chalimba.ecommercebackend.model.User;
 import com.chalimba.ecommercebackend.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,22 +27,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private TokenProvider tokenProvider;
+    @Value("${jwt.token.validity.access-token}")
+    private long ACCESS_TOKEN_VALIDITY;
+    @Value("${jwt.token.validity.refresh-token}")
+    private long REFRESH_TOKEN_VALIDITY;
 
-    @Autowired
-    private UserService userService;
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtUtil jwtUtil;
+
+    private final UserService userService;
+
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.userService = userService;
+    }
 
     @GetMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginDto loginDto) throws AuthenticationException {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new TokenDto(token));
+
+        String accessToken = jwtUtil.generateToken(authentication, ACCESS_TOKEN_VALIDITY);
+        if (loginDto.getRemember()) {
+            String refreshToken = jwtUtil.generateToken(authentication, REFRESH_TOKEN_VALIDITY);
+            return ResponseEntity.ok(new TokenDto(accessToken, refreshToken));
+        }
+        return ResponseEntity.ok(new TokenDto(accessToken, null));
     }
 
     @PostMapping("/register")
