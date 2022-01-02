@@ -30,7 +30,6 @@ public class Customer {
     private String firstName;
     private String lastName;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "customer")
     private User user;
 }
