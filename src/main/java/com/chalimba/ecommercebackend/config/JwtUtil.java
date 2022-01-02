@@ -24,9 +24,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtil implements Serializable {
 
-    @Value("${jwt.token.validity}")
-    public long TOKEN_VALIDITY;
-
     @Value("${jwt.signing.key}")
     public String SIGNING_KEY;
 
@@ -39,6 +36,10 @@ public class JwtUtil implements Serializable {
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    public String getRoleFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get(AUTHORITIES_KEY).toString());
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -58,13 +59,10 @@ public class JwtUtil implements Serializable {
         return expiration.before(new Date());
     }
 
-    public String generateToken(Authentication authentication, long tokenValidity) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+    public String generateToken(String authorities, String email, long tokenValidity) {
 
         return Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(email)
                 .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValidity * 1000))
