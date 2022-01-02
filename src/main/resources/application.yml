@@ -18,7 +18,9 @@ server:
 
 jwt:
   token:
-    validity: 18000
+    validity:
+      access-token: 18000 #5 hours
+      refresh-token: 31536000 #1 year
     prefix: Bearer
   header:
     string: Authorization
