@@ -13,9 +13,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
@@ -25,14 +28,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final BCryptPasswordEncoder passwordEncoder;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    public WebSecurityConfig(UserDetailsService userDetailsService, UnauthorizedEntryPoint unauthorizedEntryPoint,
-            BCryptPasswordEncoder passwordEncoder, JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.userDetailsService = userDetailsService;
-        this.unauthorizedEntryPoint = unauthorizedEntryPoint;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
