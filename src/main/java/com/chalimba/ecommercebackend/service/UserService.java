@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.chalimba.ecommercebackend.config.Roles;
 import com.chalimba.ecommercebackend.dto.UserDto;
+import com.chalimba.ecommercebackend.exception.NotFoundException;
 import com.chalimba.ecommercebackend.model.User;
 import com.chalimba.ecommercebackend.repository.UserRepository;
 
@@ -49,8 +50,9 @@ public class UserService implements UserDetailsService {
         return list;
     }
 
-    public UserDto findUserByEmail(String email) throws Exception {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new Exception("NOT FOUND"));
+    public UserDto findUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("The user could not be found"));
         return new UserDto(user);
     }
 
