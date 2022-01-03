@@ -5,7 +5,6 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import com.chalimba.ecommercebackend.dto.UserDto;
-
 import com.chalimba.ecommercebackend.service.UserService;
 
 import org.springframework.http.HttpStatus;
@@ -28,16 +27,8 @@ public class UserController {
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/current")
     public ResponseEntity<?> getCurrentUser(Principal principal, HttpServletRequest request) {
-        try {
-            UserDto userDto = userService.findUserByEmail(principal.getName());
-            return ResponseEntity.status(HttpStatus.OK).body(userDto);
-        } catch (Exception e) {
-
-            // TODO: handle exception
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
-        }
-
+        UserDto userDto = userService.findUserByEmail(principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
     }
 
 }
