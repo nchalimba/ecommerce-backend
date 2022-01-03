@@ -39,7 +39,10 @@ public class ApiExceptionHandler {
     }
 
     private ResponseEntity<?> getExceptionResponse(HttpStatus httpStatus, Exception e) {
-        ApiExceptionDto apiExceptionDto = new ApiExceptionDto(e.getMessage(), httpStatus,
+        String message = e.getMessage();
+        if (httpStatus == HttpStatus.INTERNAL_SERVER_ERROR)
+            message = "INTERNAL SERVER ERROR"; // 500 error messages won't be inserted into the response
+        ApiExceptionDto apiExceptionDto = new ApiExceptionDto(message, httpStatus,
                 ZonedDateTime.now(ZoneId.of("Z")));
         log.error(e.getMessage(), e);
         return ResponseEntity.status(httpStatus).body(apiExceptionDto);
