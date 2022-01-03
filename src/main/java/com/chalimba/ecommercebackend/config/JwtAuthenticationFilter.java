@@ -20,28 +20,26 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Value("${jwt.token.validity.access-token}")
     private long ACCESS_TOKEN_VALIDITY;
 
     private final UserDetailsService userDetailsService;
-
     private final JwtUtil jwtUtil;
-
-    public JwtAuthenticationFilter(UserDetailsService userDetailsService, JwtUtil jwtUtil) {
-        this.userDetailsService = userDetailsService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws IOException, ServletException {
 
         if (req.getCookies() == null) {
-            logger.info("Not authenticated");
+            log.info("Not authenticated");
             chain.doFilter(req, res);
             return;
         }
@@ -51,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .map(Cookie::getValue).findAny().orElse(null);
 
         if (accessToken == null) {
-            logger.warn("Could not find access token");
+            log.info("Could not find access token");
             chain.doFilter(req, res);
             return;
         }
@@ -60,16 +58,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             username = jwtUtil.getUsernameFromToken(accessToken);
         } catch (IllegalArgumentException e) {
-            logger.error("An error occurred while fetching Username from the access token", e);
+            log.error("An error occurred while fetching Username from the access token", e);
         } catch (ExpiredJwtException e) {
-            logger.error("The access token has expired");
+            log.error("The access token has expired", e);
             accessToken = reIssueAccessToken(res, refreshToken);
             if (accessToken != null) {
 
                 username = jwtUtil.getUsernameFromToken(accessToken);
             }
         } catch (SignatureException e) {
-            logger.error("Authentication Failed. Username or Password not valid.");
+            log.error("Authentication Failed. Username or Password not valid.", e);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -80,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication = jwtUtil.getAuthenticationToken(accessToken,
                         SecurityContextHolder.getContext().getAuthentication(), userDetails);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                logger.info("Authenticated user " + username + ", setting security context");
+                log.info("Authenticated user " + username + ", setting security context");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
@@ -103,13 +101,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.addCookie(accessTokenCookie);
             return newAccessToken;
         } catch (IllegalArgumentException e) {
-            logger.error("An error occurred while fetching Username from the refresh token", e);
+            log.error("An error occurred while fetching Username from the refresh token", e);
         } catch (ExpiredJwtException e) {
-            logger.warn("The refresh token has expired");
+            log.warn("The refresh token has expired");
         } catch (SignatureException e) {
-            logger.error("Authentication Failed. Username or Password not valid.");
+            log.error("Authentication Failed. Username or Password not valid.", e);
         } catch (Exception e) {
-            logger.error(e);
+            log.error(e.getMessage(), e);
         }
         return null;
 

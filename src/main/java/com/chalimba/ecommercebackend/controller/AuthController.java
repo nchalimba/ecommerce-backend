@@ -28,9 +28,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     @Value("${jwt.token.validity.access-token}")
@@ -43,12 +46,6 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     private final UserService userService;
-
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginDto loginDto, HttpServletResponse response)
