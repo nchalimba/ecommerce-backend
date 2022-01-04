@@ -13,6 +13,7 @@ import com.chalimba.ecommercebackend.model.User;
 import com.chalimba.ecommercebackend.service.UserService;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,9 +46,7 @@ public class AuthController {
     private long REFRESH_TOKEN_VALIDITY;
 
     private final AuthenticationManager authenticationManager;
-
     private final JwtUtil jwtUtil;
-
     private final UserService userService;
 
     @PostMapping("/login")
@@ -75,12 +74,13 @@ public class AuthController {
 
             response.addCookie(refreshTokenCookie);
         }
-        return ResponseEntity.ok(new TokenDto(accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(new TokenDto(accessToken));
     }
 
     @PostMapping("/register")
-    public User saveUser(@RequestBody UserDto user) {
-        return userService.saveUser(user);
+    public ResponseEntity<?> createUser(@RequestBody UserDto user) {
+        User savedUser = userService.saveUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @PostMapping("/logout")
@@ -95,7 +95,7 @@ public class AuthController {
         deleteRefreshTokenCookie.setMaxAge(0);
         response.addCookie(deleteAccessTokenCookie);
         response.addCookie(deleteRefreshTokenCookie);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")

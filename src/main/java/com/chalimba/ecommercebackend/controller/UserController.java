@@ -33,7 +33,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
     @GetMapping("/current")
     public ResponseEntity<?> getCurrentUser(Principal principal, HttpServletRequest request) {
         UserDto userDto = userService.findUserByEmail(principal.getName());
@@ -61,7 +60,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
     @PutMapping("/")
     public ResponseEntity<?> updateCurrentUser(@RequestBody UserDto userDto, Principal principal) {
         UserDto currentUser = userService.findUserByEmail(principal.getName());
