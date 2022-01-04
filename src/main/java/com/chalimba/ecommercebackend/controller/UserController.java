@@ -2,6 +2,7 @@ package com.chalimba.ecommercebackend.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,7 +50,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     public ResponseEntity<?> getAllUsers() {
-        List<UserDto> users = userService.findAllUsers();
+        Set<UserDto> users = userService.findAllUsers();
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
