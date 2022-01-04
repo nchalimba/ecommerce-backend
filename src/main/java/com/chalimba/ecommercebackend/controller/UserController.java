@@ -2,6 +2,7 @@ package com.chalimba.ecommercebackend.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,7 +33,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
     @GetMapping("/current")
     public ResponseEntity<?> getCurrentUser(Principal principal, HttpServletRequest request) {
         UserDto userDto = userService.findUserByEmail(principal.getName());
@@ -49,7 +49,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     public ResponseEntity<?> getAllUsers() {
-        List<UserDto> users = userService.findAllUsers();
+        Set<UserDto> users = userService.findAllUsers();
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
@@ -60,7 +60,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
     @PutMapping("/")
     public ResponseEntity<?> updateCurrentUser(@RequestBody UserDto userDto, Principal principal) {
         UserDto currentUser = userService.findUserByEmail(principal.getName());
