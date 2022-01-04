@@ -6,6 +6,8 @@ import java.time.ZonedDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -17,7 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(value = { BadRequestException.class })
-    public ResponseEntity<?> handleBadRequestException(BadRequestException e) {
+    public ResponseEntity<?> handleBadRequestException(RuntimeException e) {
+        return getExceptionResponse(HttpStatus.BAD_REQUEST, e);
+
+    }
+
+    // TODO: Fix
+    @ExceptionHandler(value = { MissingServletRequestParameterException.class })
+    public ResponseEntity<?> handleMissingServletRequestParameterException(RuntimeException e) {
         return getExceptionResponse(HttpStatus.BAD_REQUEST, e);
 
     }
@@ -42,6 +51,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(value = { AccessDeniedException.class })
     public ResponseEntity<?> handleAccessDeniedException(RuntimeException e) {
         return getExceptionResponse(HttpStatus.FORBIDDEN, e);
+    }
+
+    @ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class })
+    public ResponseEntity<?> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return getExceptionResponse(HttpStatus.METHOD_NOT_ALLOWED, e);
     }
 
     private ResponseEntity<?> getExceptionResponse(HttpStatus httpStatus, Exception e) {
