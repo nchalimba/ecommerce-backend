@@ -10,6 +10,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * This class sets the access control headers of every response.
+ */
 public class CORSFilter implements Filter {
 
     @Override

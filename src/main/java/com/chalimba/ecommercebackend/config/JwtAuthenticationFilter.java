@@ -23,6 +23,9 @@ import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * This class intercepts the request and checks for authentication.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

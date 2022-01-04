@@ -21,6 +21,9 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+/**
+ * This class serves as a helper class for jwt related tasks.
+ */
 @Component
 public class JwtUtil implements Serializable {
 
