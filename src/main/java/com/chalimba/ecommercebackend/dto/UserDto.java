@@ -15,6 +15,7 @@ import lombok.Data;
 @Builder
 @JsonInclude(Include.NON_NULL)
 public class UserDto {
+    private Long id;
     private String email;
     private String password;
     private String phone;
@@ -30,6 +31,7 @@ public class UserDto {
 
     public UserDto(User user) {
         this.email = user.getEmail();
+        this.id = user.getId();
         Customer customer = user.getCustomer();
         if (customer != null) {
             this.phone = customer.getPhone();

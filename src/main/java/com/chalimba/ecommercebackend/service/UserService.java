@@ -5,11 +5,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.chalimba.ecommercebackend.config.Roles;
 import com.chalimba.ecommercebackend.dto.UserDto;
+import com.chalimba.ecommercebackend.exception.BadRequestException;
 import com.chalimba.ecommercebackend.exception.NotFoundException;
+import com.chalimba.ecommercebackend.model.Customer;
 import com.chalimba.ecommercebackend.model.User;
+import com.chalimba.ecommercebackend.repository.CustomerRepository;
 import com.chalimba.ecommercebackend.repository.UserRepository;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
 
     private final BCryptPasswordEncoder bcryptEncoder;
 
@@ -42,10 +47,10 @@ public class UserService implements UserDetailsService {
         return new HashSet<>(Arrays.asList(authority));
     }
 
-    public List<User> findAllUsers() {
+    public List<UserDto> findAllUsers() {
         List<User> list = new ArrayList<>();
         userRepository.findAll().iterator().forEachRemaining(list::add);
-        return list;
+        return list.stream().map((user) -> new UserDto(user)).collect(Collectors.toList());
     }
 
     public UserDto findUserByEmail(String email) {
@@ -66,4 +71,28 @@ public class UserService implements UserDetailsService {
         return new UserDto(user);
     }
 
+    public UserDto findAndUpdateUserById(Long id, UserDto userDto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("The user could not be found"));
+        if (!user.getEmail().equals(userDto.getEmail()))
+            userRepository.findByEmail(userDto.getEmail()).ifPresent(otherUser -> {
+                throw new BadRequestException("The email is already used");
+            });
+
+        user.setEmail(userDto.getEmail());
+        if (userDto.getPassword() != null)
+            user.setPassword(bcryptEncoder.encode(userDto.getPassword()));
+
+        Customer customer = user.getCustomer();
+        customer.setEmail(userDto.getEmail());
+        customer.setFirstName(userDto.getFirstName());
+        customer.setLastName(userDto.getLastName());
+        customer.setPhone(userDto.getPhone());
+        customerRepository.save(customer);
+        return new UserDto(userRepository.save(user));
+    }
+
+    public void deleteUserById(Long id) {
+        customerRepository.deleteByUserId(id);
+        userRepository.deleteById(id);
+    }
 }
