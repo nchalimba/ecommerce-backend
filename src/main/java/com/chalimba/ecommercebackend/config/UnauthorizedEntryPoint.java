@@ -11,6 +11,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class handles the response of unauthorized requests.
+ */
 @Component
 public class UnauthorizedEntryPoint implements AuthenticationEntryPoint, Serializable {
 
