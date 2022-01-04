@@ -1,9 +1,7 @@
 package com.chalimba.ecommercebackend.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +29,6 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
-
     private final BCryptPasswordEncoder bcryptEncoder;
 
     @Override
@@ -47,10 +44,10 @@ public class UserService implements UserDetailsService {
         return new HashSet<>(Arrays.asList(authority));
     }
 
-    public List<UserDto> findAllUsers() {
-        List<User> list = new ArrayList<>();
+    public Set<UserDto> findAllUsers() {
+        Set<User> list = new HashSet<>();
         userRepository.findAll().iterator().forEachRemaining(list::add);
-        return list.stream().map((user) -> new UserDto(user)).collect(Collectors.toList());
+        return list.stream().map((user) -> new UserDto(user)).collect(Collectors.toSet());
     }
 
     public UserDto findUserByEmail(String email) {
