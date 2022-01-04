@@ -9,6 +9,7 @@ import com.chalimba.ecommercebackend.exception.NotFoundException;
 import com.chalimba.ecommercebackend.model.Category;
 import com.chalimba.ecommercebackend.repository.CategoryRepository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,11 @@ public class CategoryService {
         return categoryRepository.save(savedCategory);
     }
 
-    public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+    public void deleteCategoryById(Long id) {
+        try {
+            categoryRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("The category could not be found");
+        }
     }
 }
