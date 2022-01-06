@@ -6,6 +6,7 @@ import java.time.ZonedDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +21,12 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(value = { BadRequestException.class })
     public ResponseEntity<?> handleBadRequestException(RuntimeException e) {
+        return getExceptionResponse(HttpStatus.BAD_REQUEST, e);
+
+    }
+
+    @ExceptionHandler(value = { BadCredentialsException.class })
+    public ResponseEntity<?> handleBadCredentialsException(RuntimeException e) {
         return getExceptionResponse(HttpStatus.BAD_REQUEST, e);
 
     }
