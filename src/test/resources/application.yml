@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+jwt:
+  token:
+    validity:
+      access-token: 18000 #5 hours
+      refresh-token: 31536000 #1 year
+    prefix: Bearer
+  header:
+    string: Authorization
