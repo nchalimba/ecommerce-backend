@@ -57,6 +57,9 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(UserDto userDto) {
+        userRepository.findByEmail(userDto.getEmail()).ifPresent(otherUser -> {
+            throw new BadRequestException("The email is already used");
+        });
         User user = userDto.getUser();
         user.setPassword(bcryptEncoder.encode(userDto.getPassword()));
         user.setRole(Roles.CUSTOMER.name());
