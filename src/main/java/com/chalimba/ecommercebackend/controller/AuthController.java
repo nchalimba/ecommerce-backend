@@ -49,6 +49,14 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
+    /**
+     * THis method accepts login requests.
+     * 
+     * @param loginDto the request payload to login
+     * @param response the http response
+     * @return a response entity with the access token
+     * @throws AuthenticationException
+     */
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginDto loginDto, HttpServletResponse response)
             throws AuthenticationException {
@@ -77,12 +85,24 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(new TokenDto(accessToken));
     }
 
+    /**
+     * This method accepts registration requests.
+     * 
+     * @param user the request payload to register a user
+     * @return a response entity with the persisted user
+     */
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody UserDto user) {
         User savedUser = userService.saveUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
+    /**
+     * This method accepts logout requests.
+     * 
+     * @param response the http response
+     * @return an empty response entity
+     */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
         Cookie deleteAccessTokenCookie = new Cookie("accessToken", null);
@@ -96,12 +116,6 @@ public class AuthController {
         response.addCookie(deleteAccessTokenCookie);
         response.addCookie(deleteRefreshTokenCookie);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @GetMapping("/userping")
-    public String userPing() {
-        return "Any User Can Read This";
     }
 
 }

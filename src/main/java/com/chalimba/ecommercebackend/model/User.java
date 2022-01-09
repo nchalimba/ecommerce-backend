@@ -20,13 +20,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * This class represents the database table for users.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_table")
+@Table(name = "user_table") // renamed because postgres does not allow tables to be named user
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

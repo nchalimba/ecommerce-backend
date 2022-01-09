@@ -10,6 +10,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * This class represents the request and response payload for user-related
+ * requests.
+ */
 @Data
 @AllArgsConstructor
 @Builder

@@ -17,18 +17,22 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * This class handles all exceptions that are thrown in the controller layer.
+ */
 @ControllerAdvice
 @Slf4j
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(value = { BadRequestException.class, MethodArgumentTypeMismatchException.class })
+    /**
+     * This method handles all exceptions related to bad user input.
+     * 
+     * @param e the exception that occurred
+     * @return a response entity containing the exception payload
+     */
+    @ExceptionHandler(value = { BadRequestException.class, MethodArgumentTypeMismatchException.class,
+            BadCredentialsException.class })
     public ResponseEntity<?> handleBadRequestException(RuntimeException e) {
-        return getExceptionResponse(HttpStatus.BAD_REQUEST, e);
-
-    }
-
-    @ExceptionHandler(value = { BadCredentialsException.class })
-    public ResponseEntity<?> handleBadCredentialsException(RuntimeException e) {
         return getExceptionResponse(HttpStatus.BAD_REQUEST, e);
 
     }
@@ -40,31 +44,50 @@ public class ApiExceptionHandler {
 
     }
 
-    @ExceptionHandler(value = { NotFoundException.class })
-    public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
+    /**
+     * This method handles all exceptions related to not found resources.
+     * 
+     * @param e the exception that occurred
+     * @return a response entity containing the exception payload
+     */
+    @ExceptionHandler(value = { NotFoundException.class, NoHandlerFoundException.class })
+    public ResponseEntity<?> handleNotFoundException(RuntimeException e) {
         return getExceptionResponse(HttpStatus.NOT_FOUND, e);
 
     }
 
-    @ExceptionHandler(value = { NoHandlerFoundException.class })
-    public ResponseEntity<?> handleNoHandlerFoundException(NoHandlerFoundException e) {
-        return getExceptionResponse(HttpStatus.NOT_FOUND, e);
-
-    }
-
-    @ExceptionHandler(value = { RuntimeException.class })
-    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
-        return getExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, e);
-    }
-
+    /**
+     * This method handles all unauthorized exceptions.
+     * 
+     * @param e the exception that occurred
+     * @return a response entity containing the exception payload
+     */
     @ExceptionHandler(value = { AccessDeniedException.class })
-    public ResponseEntity<?> handleAccessDeniedException(RuntimeException e) {
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
         return getExceptionResponse(HttpStatus.FORBIDDEN, e);
     }
 
+    /**
+     * This method handles method not allowed exceptions.
+     * 
+     * @param e the exception that occurred
+     * @return a response entity containing the exception payload
+     */
     @ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class })
     public ResponseEntity<?> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         return getExceptionResponse(HttpStatus.METHOD_NOT_ALLOWED, e);
+    }
+
+    /**
+     * This method handles all runtime exceptions that where not handled by the
+     * other methods.
+     * 
+     * @param e the exception that occurred
+     * @return a response entity containing the exception payload
+     */
+    @ExceptionHandler(value = { RuntimeException.class })
+    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+        return getExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
 
     private ResponseEntity<?> getExceptionResponse(HttpStatus httpStatus, Exception e) {

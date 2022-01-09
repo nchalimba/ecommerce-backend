@@ -30,18 +30,35 @@ public class ProductController {
 
     private final ProductService productService;
 
+    /**
+     * This method accepts requests to fetch all products
+     * 
+     * @return a response entity containing all products
+     */
     @GetMapping("/")
     public ResponseEntity<?> getAllProducts() {
         Set<Product> products = productService.findAllProducts();
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
+    /**
+     * This method accepts requests to fetch a category by id.
+     * 
+     * @param id the id of the product
+     * @return a response entity containing the product
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
         Product product = productService.findProductById(id);
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
+    /**
+     * This method accepts requests to create a new product.
+     * 
+     * @param product the request payload with the new product
+     * @return a response entity containing the saved product
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public ResponseEntity<?> createProduct(@RequestBody Product product) {
@@ -49,6 +66,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(savedProduct);
     }
 
+    /**
+     * This method accepts requests to update a product by id.
+     * 
+     * @param id      the id of the product
+     * @param product the request payload with the updated values
+     * @return a response entity containing the updated product
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProductById(@PathVariable Long id, @RequestBody Product product) {
@@ -56,6 +80,12 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 
+    /**
+     * This method accepts requests to delete a product by id.
+     * 
+     * @param id the id of the product
+     * @return an empty response entity
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
@@ -63,6 +93,17 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    /**
+     * This method accepts requests to add or to remove a given category to / from a
+     * product by id
+     * 
+     * @param productId  the product id from which the category should be
+     *                   removed / added
+     * @param categoryId the category id that should be added / removed
+     * @param delete     a boolean determining whether the category should be added
+     *                   or removed
+     * @return an empty response entity
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/")
     public ResponseEntity<?> addOrRemoveCategoryToProduct(@RequestParam Long productId, @RequestParam Long categoryId,

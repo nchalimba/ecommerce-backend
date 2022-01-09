@@ -23,6 +23,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * This class represents the database table for products.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -47,11 +50,21 @@ public class Product {
             @JoinColumn(name = "category_id") })
     private Set<Category> categories = new HashSet<>();
 
+    /**
+     * This method adds a given category to the object instance.
+     * 
+     * @param category the category to be added
+     */
     public void addCategory(Category category) {
         categories.add(category);
         category.getProducts().add(this);
     }
 
+    /**
+     * This method removes a given category from the object instance.
+     * 
+     * @param category the category to be removed
+     */
     public void removeCategory(Category category) {
         categories.remove(category);
         category.getProducts().remove(this);

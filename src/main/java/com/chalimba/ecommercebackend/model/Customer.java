@@ -14,6 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * This class represents the database table for customers.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

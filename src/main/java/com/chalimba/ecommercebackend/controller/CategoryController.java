@@ -29,18 +29,35 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    /**
+     * This method accepts requests to fetch all categories.
+     * 
+     * @return a response entity containing all categories
+     */
     @GetMapping("/")
     public ResponseEntity<?> getAllCategories() {
         Set<Category> categories = categoryService.findAllCategories();
         return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 
+    /**
+     * This method accepts requests to fetch a category by id.
+     * 
+     * @param id the id of the category
+     * @return a response entity containing the category
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
         Category category = categoryService.findCategoryById(id);
         return ResponseEntity.status(HttpStatus.OK).body(category);
     }
 
+    /**
+     * This method accepts requests to create a new category.
+     * 
+     * @param category the category to be persisted
+     * @return a response entity with the persisted category
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public ResponseEntity<?> createCategory(@RequestBody Category category) {
@@ -48,6 +65,13 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
+    /**
+     * This method accepts requests to update a category by id.
+     * 
+     * @param id       the id of the category
+     * @param category the request payload with the updated data
+     * @return a response entity containing the updated category
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategoryById(@PathVariable Long id, @RequestBody Category category) {
@@ -55,6 +79,12 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
     }
 
+    /**
+     * This method accepts requests to delete a category by id.
+     * 
+     * @param id the id of the category
+     * @return an empty response entity
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategoryById(@PathVariable Long id) {
