@@ -33,12 +33,25 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * This method accepts requests to fetch the current user.
+     * 
+     * @param principal the currently authenticated principal
+     * @param request   the http request
+     * @return a response entity containing the user
+     */
     @GetMapping("/current")
     public ResponseEntity<?> getCurrentUser(Principal principal, HttpServletRequest request) {
         UserDto userDto = userService.findUserByEmail(principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(userDto);
     }
 
+    /**
+     * This method accepts requests to fetch a user by id.
+     * 
+     * @param id the id of the user
+     * @return a response entity containing the user
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
@@ -46,6 +59,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userDto);
     }
 
+    /**
+     * This method accepts requests to fetch all users.
+     * 
+     * @return a response entity containing all users
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     public ResponseEntity<?> getAllUsers() {
@@ -53,6 +71,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
+    /**
+     * This method accepts requests to update a user by id.
+     * 
+     * @param id      the id of the user
+     * @param userDto the request payload with the updated values
+     * @return a response entity containing the updated user
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUserById(@PathVariable Long id, @RequestBody UserDto userDto) {
@@ -60,6 +85,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
+    /**
+     * This method accepts requests to update the current user.
+     * 
+     * @param userDto   the request payload with the updated valuse
+     * @param principal the currently authenticated principal
+     * @return a response entity containing the updated user
+     */
     @PutMapping("/")
     public ResponseEntity<?> updateCurrentUser(@RequestBody UserDto userDto, Principal principal) {
         UserDto currentUser = userService.findUserByEmail(principal.getName());
@@ -67,6 +99,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
+    /**
+     * This method accepts requests to delete a user by id.
+     * 
+     * @param id the id of the user
+     * @return an empty response entity
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {

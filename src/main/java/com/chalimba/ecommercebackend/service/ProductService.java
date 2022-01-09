@@ -9,10 +9,14 @@ import com.chalimba.ecommercebackend.model.Category;
 import com.chalimba.ecommercebackend.model.Product;
 import com.chalimba.ecommercebackend.repository.ProductRepository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class contains the business logic for product-related requests.
+ */
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -20,19 +24,46 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
 
+    /**
+     * This method fetches all products from the database.
+     * 
+     * @return a hashset of all products
+     */
     public Set<Product> findAllProducts() {
         return new HashSet<>(productRepository.findAll());
     }
 
+    /**
+     * This method fetches a product from the database with a given id.
+     * 
+     * @param id the id of the product
+     * @return the product
+     * @throws NotFoundException if the product does not exist
+     */
     public Product findProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("The product could not be found"));
     }
 
+    /**
+     * This method saves a new product to the database.
+     * 
+     * @param product the product to be saved
+     * @return the saved product
+     */
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }
 
+    /**
+     * This method fetches and updates a product with a given id.
+     * 
+     * @param id      the id of the product
+     * @param product the new values for the product
+     * @return the updated product
+     * @throws NotFoundException   if the product does not exist
+     * @throws BadRequestException if the updated title is already in use
+     */
     public Product findAndUpdateProduct(Long id, Product product) {
         Product savedProduct = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("The product could not be found"));
@@ -50,10 +81,26 @@ public class ProductService {
         return productRepository.save(savedProduct);
     }
 
+    /**
+     * This method deletes a product from the database with a given id.
+     * 
+     * @param id the id of the product
+     * @throws NotFoundException if the product does not exist
+     */
     public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+        try {
+            productRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("The product could not be found");
+        }
     }
 
+    /**
+     * This method adds a category to a product.
+     * 
+     * @param productId  the id of the product
+     * @param categoryId the id of the category
+     */
     public void addCategoryToProduct(Long productId, Long categoryId) {
         Product product = findProductById(productId);
         Category category = categoryService.findCategoryById(categoryId);
@@ -62,6 +109,12 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    /**
+     * This method removes a category from a product.
+     * 
+     * @param productId  the id of the product
+     * @param categoryId the id of the category
+     */
     public void removeCategoryFromProduct(Long productId, Long categoryId) {
         Product product = findProductById(productId);
         Category category = categoryService.findCategoryById(categoryId);

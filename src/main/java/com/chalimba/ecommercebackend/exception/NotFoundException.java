@@ -1,5 +1,8 @@
 package com.chalimba.ecommercebackend.exception;
 
+/**
+ * This class is a custom exceptions for not found resources.
+ */
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {
         super(message);

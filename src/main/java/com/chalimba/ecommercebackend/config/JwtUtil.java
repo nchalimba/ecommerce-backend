@@ -28,24 +28,42 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil implements Serializable {
 
     @Value("${jwt.signing.key}")
-    public String SIGNING_KEY;
+    private String SIGNING_KEY;
 
     @Value("${jwt.authorities.key}")
-    public String AUTHORITIES_KEY;
+    private String AUTHORITIES_KEY;
 
+    /**
+     * This method retrieves the username from a given token.
+     * 
+     * @param token a jwt
+     * @return the username
+     */
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
+    /**
+     * This method retrieves the expiration date from a given token.
+     * 
+     * @param token a jwt
+     * @return the expiration date
+     */
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    /**
+     * This method retrieves the role from a given token.
+     * 
+     * @param token a jwt
+     * @return the role
+     */
     public String getRoleFromToken(String token) {
         return getClaimFromToken(token, claims -> claims.get(AUTHORITIES_KEY).toString());
     }
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
@@ -62,6 +80,14 @@ public class JwtUtil implements Serializable {
         return expiration.before(new Date());
     }
 
+    /**
+     * This method generates a new jwt.
+     * 
+     * @param authorities   the roles
+     * @param email         the username / email
+     * @param tokenValidity the validity duration of the token
+     * @return a new jwt
+     */
     public String generateToken(String authorities, String email, long tokenValidity) {
 
         return Jwts.builder()
@@ -73,6 +99,13 @@ public class JwtUtil implements Serializable {
                 .compact();
     }
 
+    /**
+     * This method checks if a given token is valid.
+     * 
+     * @param token       a jwt
+     * @param userDetails the information of the given user
+     * @return true if valid
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
