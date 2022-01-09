@@ -55,7 +55,6 @@ public class LoginTest {
     void shouldReturn400_WhenInvalidCredentials() throws Exception {
         // given
         LoginDto loginDto = TestData.LOGIN_DTO;
-
         // then
         mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtils.asJsonString(loginDto)))
